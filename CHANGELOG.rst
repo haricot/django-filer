@@ -2,7 +2,9 @@
 CHANGELOG
 =========
 
-
+ 
+* Added the ability to upload a folder of assets (via drag and drop) and retain the inner folder structure .
+=======
 
 1.7.0 (2020-02-20)
 ==================
@@ -34,6 +36,7 @@ CHANGELOG
 * Added support for Django 2.2
 * Adapted test matrix
 * Adapted test structure and added fixes
+>>>>>>> origin/folder:CHANGELOG.rst
 
 
 1.4.4 (2019-01-22)

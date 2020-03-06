@@ -5,6 +5,9 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from .. import settings as filer_settings
+
+from ..utils.compatibility import reverse
+
 from . import mixins
 from .filemodels import File
 from .foldermodels import Folder
