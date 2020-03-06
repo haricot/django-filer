@@ -1,5 +1,3 @@
-
-Learn more or give us feedback
 import hashlib
 import os
 from datetime import datetime
