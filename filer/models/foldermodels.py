@@ -257,7 +257,6 @@ except mptt.AlreadyRegistered:
     pass
 
 
-@python_2_unicode_compatible
 class FolderPermission(models.Model):
     ALL = 0
     THIS = 1
