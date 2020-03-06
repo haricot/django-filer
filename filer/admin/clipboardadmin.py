@@ -87,10 +87,10 @@ def ajax_upload(request, folder_id=None):
     try:
         if len(request.FILES) == 1:
             # dont check if request is ajax or not, just grab the file
-            upload, filename, is_raw = handle_request_files_upload(request)
+            upload, filename, is_raw, mime_type = handle_request_files_upload(request)
         else:
             # else process the request as usual
-            upload, filename, is_raw = handle_upload(request)
+            upload, filename, is_raw, mime_type = handle_upload(request)
         # TODO: Deprecated/refactor
         # Get clipboad
         # clipboard = Clipboard.objects.get_or_create(user=request.user)[0]
@@ -99,7 +99,7 @@ def ajax_upload(request, folder_id=None):
         for filer_class in filer_settings.FILER_FILE_MODELS:
             FileSubClass = load_model(filer_class)
             # TODO: What if there are more than one that qualify?
-            if FileSubClass.matches_file_type(filename, upload, request):
+            if FileSubClass.matches_file_type(filename, upload, mime_type):
                 FileForm = modelform_factory(
                     model=FileSubClass,
                     fields=('original_filename', 'owner', 'file')
@@ -113,53 +113,60 @@ def ajax_upload(request, folder_id=None):
             # Enforce the FILER_IS_PUBLIC_DEFAULT
             file_obj.is_public = filer_settings.FILER_IS_PUBLIC_DEFAULT
             file_obj.folder = folder
+            file_obj.mime_type = mime_type
             file_obj.save()
             # TODO: Deprecated/refactor
             # clipboard_item = ClipboardItem(
             #     clipboard=clipboard, file=file_obj)
             # clipboard_item.save()
 
-            # Try to generate thumbnails.
-            if not file_obj.icons:
-                # There is no point to continue, as we can't generate
-                # thumbnails for this file. Usual reasons: bad format or
-                # filename.
-                file_obj.delete()
-                # This would be logged in BaseImage._generate_thumbnails()
-                # if FILER_ENABLE_LOGGING is on.
-                return JsonResponse(
-                    {'error': 'failed to generate icons for file'},
-                    status=500,
-                )
-            thumbnail = None
-            # Backwards compatibility: try to get specific icon size (32px)
-            # first. Then try medium icon size (they are already sorted),
-            # fallback to the first (smallest) configured icon.
-            for size in (['32']
-                        + filer_settings.FILER_ADMIN_ICON_SIZES[1::-1]):
-                try:
-                    thumbnail = file_obj.icons[size]
-                    break
-                except KeyError:
-                    continue
+            data = {}
+            # Try to generate thumbnails if not svg file.
+            if not file_obj.mime_type == "image/svg+xml":
+                if not file_obj.icons:
+                    # There is no point to continue, as we can't generate
+                    # thumbnails for this file. Usual reasons: bad format or
+                    # filename.
+                    file_obj.delete()
+                    # This would be logged in BaseImage._generate_thumbnails()
+                    # if FILER_ENABLE_LOGGING is on.
+                    return JsonResponse(
+                        {'error': 'failed to generate icons for file'},
+                        status=500,
+                    )
+                thumbnail = None
+                # Backwards compatibility: try to get specific icon size (32px)
+                # first. Then try medium icon size (they are already sorted),
+                # fallback to the first (smallest) configured icon.
+                for size in (['32']
+                            + filer_settings.FILER_ADMIN_ICON_SIZES[1::-1]):
+                    try:
+                        thumbnail = file_obj.icons[size]
+                        break
+                    except KeyError:
+                        continue
 
-            data = {
-                'thumbnail': thumbnail,
+                # prepare preview thumbnail
+                if type(file_obj) == Image:
+                    thumbnail_180_options = {
+                        'size': (180, 180),
+                        'crop': True,
+                        'upscale': True,
+                    }
+
+                    thumbnail_180 = file_obj.file.get_thumbnail(
+                        thumbnail_180_options)
+                    data['thumbnail'] = thumbnail
+                    data['thumbnail_180'] = thumbnail_180.url
+                    data['original_image'] = file_obj.url
+
+            data_common = {
                 'alt_text': '',
                 'label': str(file_obj),
                 'file_id': file_obj.pk,
+                'original_image': file_obj.url
             }
-            # prepare preview thumbnail
-            if type(file_obj) == Image:
-                thumbnail_180_options = {
-                    'size': (180, 180),
-                    'crop': True,
-                    'upscale': True,
-                }
-                thumbnail_180 = file_obj.file.get_thumbnail(
-                    thumbnail_180_options)
-                data['thumbnail_180'] = thumbnail_180.url
-                data['original_image'] = file_obj.url
+            data.update(data_common)
             return JsonResponse(data)
         else:
             form_errors = '; '.join(['%s: %s' % (
