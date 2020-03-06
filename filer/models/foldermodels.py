@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.core.exceptions import ValidationError
@@ -10,15 +7,7 @@ from django.urls import reverse
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 
-from .. import settings as filer_settings
-from ..utils.compatibility import (
-    is_authenticated,
-    python_2_unicode_compatible,
-    reverse,
-)
-
 import mptt
-from six import python_2_unicode_compatible
 
 from .. import settings as filer_settings
 from . import mixins
