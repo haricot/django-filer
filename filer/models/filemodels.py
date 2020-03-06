@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
 
+Learn more or give us feedback
 import hashlib
 import os
 from datetime import datetime
@@ -14,13 +13,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from .. import settings as filer_settings
 from ..fields.multistorage_file import MultiStorageFileField
-from ..utils.compatibility import (
-    NoReverseMatch,
-    is_authenticated,
-    python_2_unicode_compatible,
-    reverse,
-)
-
 from . import mixins
 from .foldermodels import Folder
 
