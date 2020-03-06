@@ -79,7 +79,6 @@ class FolderPermissionManager(models.Manager):
         return allow_list - deny_list
 
 
-@python_2_unicode_compatible
 class Folder(models.Model, mixins.IconsMixin):
     """
     Represents a Folder that things (files) can be put into. Folders are *NOT*
