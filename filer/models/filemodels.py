@@ -9,21 +9,8 @@ from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-<<<<<<< HEAD
 from .. import settings as filer_settings
 from ..fields.multistorage_file import MultiStorageFileField
-from ..utils.compatibility import (
-    NoReverseMatch,
-    is_authenticated,
-    python_2_unicode_compatible,
-    reverse,
-)
-=======
-from six import python_2_unicode_compatible
-
-from .. import settings as filer_settings
-from ..fields.multistorage_file import MultiStorageFileField
->>>>>>> origin/folder
 from . import mixins
 from .foldermodels import Folder
 
