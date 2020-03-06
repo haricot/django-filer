@@ -22,7 +22,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
 __author__ = 'jannis@itisme.org (Jannis Andrija Schnitzer)'
 
 

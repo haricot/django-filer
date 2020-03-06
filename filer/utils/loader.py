@@ -10,7 +10,6 @@ local changes:
 
 from importlib import import_module
 
-
 def load_object(import_path):
     """
     Loads an object from an 'import_path', like in MIDDLEWARE_CLASSES and the

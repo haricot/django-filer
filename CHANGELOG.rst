@@ -2,9 +2,14 @@
 CHANGELOG
 =========
 
+1.7.x (unreleased)
+==================
+ 
+* Added the ability to upload a folder of assets (via drag and drop) and retain the inner folder structure .
+*  mix PR #1152 #1166 #1115 todo #1178
 
-
-1.7.0 (unreleased)
+1.7.0 (2020-02-20)
+ 
 ==================
 
 * Added Django 3.0 support

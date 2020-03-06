@@ -10,6 +10,7 @@ REQUIREMENTS = [
     'django_polymorphic>=0.7,<2.2',
     'easy-thumbnails>=2,<3.0',
     'Unidecode>=0.04,<1.2',
+    'six',
 ]
 
 
