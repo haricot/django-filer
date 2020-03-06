@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import mptt
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 
@@ -16,6 +16,11 @@ from ..utils.compatibility import (
     python_2_unicode_compatible,
     reverse,
 )
+
+import mptt
+from six import python_2_unicode_compatible
+
+from .. import settings as filer_settings
 from . import mixins
 
 
@@ -101,6 +106,13 @@ class Folder(models.Model, mixins.IconsMixin):
     can_have_subfolders = True
     _icon = 'plainfolder'
 
+    # explicitly define MPTT fields which would otherwise change
+    # and create a migration, depending on django-mptt version
+    # (see: https://github.com/django-mptt/django-mptt/pull/578)
+    level = models.PositiveIntegerField(editable=False)
+    lft = models.PositiveIntegerField(editable=False)
+    rght = models.PositiveIntegerField(editable=False)
+
     parent = models.ForeignKey(
         'self',
         verbose_name=('parent'),
@@ -182,7 +194,7 @@ class Folder(models.Model, mixins.IconsMixin):
         folder. Return the string 'ALL' if the user has all rights.
         """
         user = request.user
-        if not is_authenticated(user):
+        if not user.is_authenticated:
             return False
         elif user.is_superuser:
             return True
@@ -238,6 +250,8 @@ class Folder(models.Model, mixins.IconsMixin):
             return False
 
     class Meta(object):
+        # see: https://github.com/django-mptt/django-mptt/pull/577
+        index_together = (('tree_id', 'lft'),)
         unique_together = (('parent', 'name'),)
         ordering = ('name',)
         permissions = (("can_use_directory_listing",
@@ -245,6 +259,7 @@ class Folder(models.Model, mixins.IconsMixin):
         app_label = 'filer'
         verbose_name = _("Folder")
         verbose_name_plural = _("Folders")
+
 
 # MPTT registration
 try:

@@ -9,11 +9,12 @@ from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.http import urlencode
 from django.utils.safestring import mark_safe
 
 from ..models import Folder
-from ..utils.compatibility import LTE_DJANGO_1_8, reverse, truncate_words
+from ..utils.compatibility import truncate_words
 from ..utils.model_label import get_model_label
 
 
@@ -30,6 +31,7 @@ class AdminFolderWidget(ForeignKeyRawIdWidget):
         if attrs is None:
             attrs = {}
         related_url = None
+
         if value:
             try:
                 folder = Folder.objects.get(pk=value)
@@ -72,12 +74,11 @@ class AdminFolderWidget(ForeignKeyRawIdWidget):
         return '&nbsp;<strong>%s</strong>' % truncate_words(obj, 14)
 
     def obj_for_value(self, value):
+        if not value:
+            return None
         try:
             key = self.rel.get_related_field().name
-            if LTE_DJANGO_1_8:
-                obj = self.rel.to._default_manager.get(**{key: value})
-            else:
-                obj = self.rel.model._default_manager.get(**{key: value})
+            obj = self.rel.model._default_manager.get(**{key: value})
         except ObjectDoesNotExist:
             obj = None
         return obj
