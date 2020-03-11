@@ -7,12 +7,17 @@ from django.db import migrations, models
 import filer.models.filemodels
 
 
-def guess_mimetypes(apps, schema_editor):
+def guess_mimetypes_file(apps, schema_editor):
     FileModel = apps.get_model('filer', 'File')
-    for file_obj in FileModel.objects.all():
-        file_obj.mime_type, _ = mimetypes.guess_type(file_obj.file.url)
-        file_obj.save(update_fields=['mime_type'])
+    for fileobj in FileModel.objects.all():
+        fileobj.mime_type, _ = mimetypes.guess_type(fileobj.file.path)
+        fileobj.save(update_fields=['mime_type'])
 
+def guess_mimetypes_image(apps, schema_editor):
+    FileModel = apps.get_model('filer', 'Image')
+    for fileobj in FileModel.objects.all():
+        fileobj.mime_type, _ = mimetypes.guess_type(fileobj.file.path)
+        fileobj.save(update_fields=['mime_type'])
 
 class Migration(migrations.Migration):
 
@@ -26,5 +31,14 @@ class Migration(migrations.Migration):
             name='mime_type',
             field=models.CharField(default='application/octet-stream', help_text='MIME type of uploaded content', max_length=255, validators=[filer.models.filemodels.mimetype_validator]),
         ),
-        migrations.RunPython(guess_mimetypes, reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(guess_mimetypes_file, reverse_code=migrations.RunPython.noop),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='image',
+            name='mime_type',
+            field=models.CharField(default='application/octet-stream', help_text='MIME type of uploaded content', max_length=255, validators=[filer.models.filemodels.mimetype_validator]),
+        ),
+        migrations.RunPython(guess_mimetypes_image, reverse_code=migrations.RunPython.noop),
     ]
