@@ -9,7 +9,6 @@ from ..utils.filer_easy_thumbnails import FilerThumbnailer
 from ..utils.pil_exif import get_exif_for_file, get_bounds_for_file
 from .filemodels import File
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -50,14 +49,21 @@ class BaseImage(File):
     def file_data_changed(self, post_init=False):
         attrs_updated = super().file_data_changed(post_init=post_init)
         if attrs_updated:
+            
             try:
                 try:
                     imgfile = self.file.file
                 except ValueError:
                     imgfile = self.file_ptr.file
                 imgfile.seek(0)
-                self._width, self._height = PILImage.open(imgfile).size
-                imgfile.seek(0)
+                if imgfile.mine_type == "image/svg+xml": 
+                    from svglib.svglib import svg2rlg
+                    drawing = svg2rlg(imgfile.file)
+                    self._width, self._height = drawing.width, drawing.height
+                    self._bounds = [left, bottom, right, top] =  drawing.getBounds()
+                else:
+                    self._width, self._height = PILImage.open(imgfile).size
+                    self._bounds = False
             except Exception:
                 if post_init is False:
                     # in case `imgfile` could not be found, unset dimensions
