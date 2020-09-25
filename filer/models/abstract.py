@@ -55,21 +55,13 @@ class BaseImage(File):
                     except ValueError:
                         imgfile = self.file_ptr.file
                     imgfile.seek(0)
-
-                    if imgfile.mine_type == "image/svg+xml": 
-                        from svglib.svglib import svg2rlg
-                        drawing = svg2rlg(imgfile.file)
-                        self._width, self._height = drawing.width, drawing.height
-                        self._bounds = [left, bottom, right, top] =  drawing.getBounds()
-                    else:
-                        self._width, self._height = PILImage.open(imgfile).size
-                        self._bounds = False
+                    self._width, self._height = PILImage.open(imgfile).size
+                    self._bounds = False
                 except Exception:
                     if post_init is False:
                         # in case `imgfile` could not be found, unset dimensions
                         # but only if not initialized by loading a fixture file
-                        self._width, self._height = None, None
-                        self._bounds = None
+                        self._width, self._height, self._bounds = None, None, None
             else:
                 try:
                     try:
@@ -86,7 +78,7 @@ class BaseImage(File):
                     if post_init is False:
                         # in case `imgfile` could not be found, unset dimensions
                         # but only if not initialized by loading a fixture file
-                        self._width, self._height = None, None
+                        self._width, self._height, self._bounds = None, None, None
         return attrs_updated
 
     def save(self, *args, **kwargs):
