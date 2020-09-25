@@ -8,6 +8,7 @@ from ..utils.compatibility import PILImage
 from ..utils.filer_easy_thumbnails import FilerThumbnailer
 from .filemodels import File
 
+
 logger = logging.getLogger(__name__)
 
 
