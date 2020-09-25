@@ -48,12 +48,13 @@ class BaseImage(File):
     def file_data_changed(self, post_init=False):
         attrs_updated = super().file_data_changed(post_init=post_init)
         if attrs_updated:
-            if not imgfile.mine_type == "image/svg+xml":
+            imgfile = None
+            try:
+                imgfile = self.file.file
+            except ValueError:
+                imgfile = self.file_ptr.file
+            if imgfile and not imgfile.mine_type == "image/svg+xml":
                 try:
-                    try:
-                        imgfile = self.file.file
-                    except ValueError:
-                        imgfile = self.file_ptr.file
                     imgfile.seek(0)
                     self._width, self._height = PILImage.open(imgfile).size
                     self._bounds = False
@@ -64,10 +65,6 @@ class BaseImage(File):
                         self._width, self._height, self._bounds = None, None, None
             else:
                 try:
-                    try:
-                        imgfile = self.file.file
-                    except ValueError:
-                        imgfile = self.file_ptr.file
                     imgfile.seek(0)
 
                     from svglib.svglib import svg2rlg
