@@ -48,26 +48,45 @@ class BaseImage(File):
     def file_data_changed(self, post_init=False):
         attrs_updated = super().file_data_changed(post_init=post_init)
         if attrs_updated:
-            
-            try:
+            if not imgfile.mine_type == "image/svg+xml":
                 try:
-                    imgfile = self.file.file
-                except ValueError:
-                    imgfile = self.file_ptr.file
-                imgfile.seek(0)
-                if imgfile.mine_type == "image/svg+xml": 
+                    try:
+                        imgfile = self.file.file
+                    except ValueError:
+                        imgfile = self.file_ptr.file
+                    imgfile.seek(0)
+
+                    if imgfile.mine_type == "image/svg+xml": 
+                        from svglib.svglib import svg2rlg
+                        drawing = svg2rlg(imgfile.file)
+                        self._width, self._height = drawing.width, drawing.height
+                        self._bounds = [left, bottom, right, top] =  drawing.getBounds()
+                    else:
+                        self._width, self._height = PILImage.open(imgfile).size
+                        self._bounds = False
+                except Exception:
+                    if post_init is False:
+                        # in case `imgfile` could not be found, unset dimensions
+                        # but only if not initialized by loading a fixture file
+                        self._width, self._height = None, None
+                        self._bounds = None
+            else:
+                try:
+                    try:
+                        imgfile = self.file.file
+                    except ValueError:
+                        imgfile = self.file_ptr.file
+                    imgfile.seek(0)
+
                     from svglib.svglib import svg2rlg
                     drawing = svg2rlg(imgfile.file)
                     self._width, self._height = drawing.width, drawing.height
                     self._bounds = [left, bottom, right, top] =  drawing.getBounds()
-                else:
-                    self._width, self._height = PILImage.open(imgfile).size
-                    self._bounds = False
-            except Exception:
-                if post_init is False:
-                    # in case `imgfile` could not be found, unset dimensions
-                    # but only if not initialized by loading a fixture file
-                    self._width, self._height = None, None
+                except Exception:
+                    if post_init is False:
+                        # in case `imgfile` could not be found, unset dimensions
+                        # but only if not initialized by loading a fixture file
+                        self._width, self._height = None, None
         return attrs_updated
 
     def save(self, *args, **kwargs):
