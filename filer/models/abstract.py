@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from .. import settings as filer_settings
 from ..utils.compatibility import PILImage
 from ..utils.filer_easy_thumbnails import FilerThumbnailer
+from ..utils.pil_exif import get_exif_for_file
 from .filemodels import File
 
 
@@ -104,7 +105,7 @@ class BaseImage(File):
                 self._exif_cache = {}
         return self._exif_cache
     exif = property(_get_exif)
-    
+
     def has_edit_permission(self, request):
         return self.has_generic_permission(request, 'edit')
 
