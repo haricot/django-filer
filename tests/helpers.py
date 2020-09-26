@@ -1,7 +1,10 @@
+impo io
+import textwrap
 from filer.models.clipboardmodels import Clipboard, ClipboardItem
 from filer.models.foldermodels import Folder
 from filer.utils.compatibility import PILImage, PILImageDraw
-
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderSVG
 
 def create_superuser():
     from django.contrib.auth import get_user_model
@@ -45,6 +48,12 @@ def create_image(mode='RGB', size=(800, 600)):
     draw.rectangle((x_bit * 2, y_bit, x_bit * 3, y_bit * 8), 'red')
     return image
 
+def create_image_svg(mode='RGB', size=(800, 600)):
+    svg_xml=f"""<svg viewBox="0 0 {size.0} {size.1}" xmlns="http://www.w3.org/2000/svg">
+  <rect x="-25" y="-25" width="{size.0}" height="{size.0}"  stroke="black" fill="transparent" stroke-width="5" transform="translate(150,150)"></rect>
+</svg>"""
+    image = io.StringIO(textwrap.dedent(svg_xml))
+    return image
 
 class SettingsOverride:
     """
