@@ -57,13 +57,13 @@ class BaseImage(File):
                 except ValueError:
                     imgfile = self.file_ptr.file
                 imgfile.seek(0)
-            except:
+            except Exception:
                 imgfile = None
             if imgfile:
-                if  imgfile.content_type == 'image/svg+xml':
-                    is_except= False
+                is_except = False
+                if imgfile.content_type == 'image/svg+xml':
                     try:
-                        self._width, self._height  self._bounds = get_metadata_for_svg(self.file)
+                        self._width, self._height, self._bounds = get_metadata_for_svg(self.file)
                     except Exception:
                         is_except = True
                 else:
@@ -71,11 +71,11 @@ class BaseImage(File):
                         self._width, self._height = PILImage.open(imgfile).size
                         self._bounds = False
                     except Exception:
-                         is_except = True
+                        is_except = True
                 if is_except and post_init is False:
                     # in case `imgfile` could not be found, unset dimensions
                     # but only if not initialized by loading a fixture file
-                    self._width, self._height= None, None
+                    self._width, self._height = None, None
         return attrs_updated
 
     def save(self, *args, **kwargs):
@@ -105,20 +105,18 @@ class BaseImage(File):
     exif = property(_get_exif)
 
     def _get_bounds(self):
-        print(self.file.__dict__)
-        
         if hasattr(self, '_bounds_cache'):
             return self._bounds_cache
         else:
             if self.file:
-                if hasattr(self.file ,'file'):
+                if hasattr(self.file,'file'):
                     self._width, self._height, self._bounds_cache = get_metadata_for_svg(self.file)
                 else:
                     self._bounds_cache = None
             else:
                 self._bounds_cache = {}
         return self._bounds_cache or []
-    bounds =  property(_get_bounds)
+    bounds = property(_get_bounds)
 
     def has_edit_permission(self, request):
         return self.has_generic_permission(request, 'edit')
