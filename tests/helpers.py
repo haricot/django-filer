@@ -1,4 +1,4 @@
-impo io
+import io
 import textwrap
 from filer.models.clipboardmodels import Clipboard, ClipboardItem
 from filer.models.foldermodels import Folder
