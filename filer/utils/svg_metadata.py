@@ -1,5 +1,6 @@
 from svglib.svglib import svg2rlg
 
+
 def get_metadata_for_svg(file_obj):
     try:
         drawing = svg2rlg(file_obj.file)
