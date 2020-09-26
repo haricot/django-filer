@@ -61,7 +61,7 @@ class BaseImage(File):
                 imgfile = None
             if imgfile:
                 is_except = False
-                if imgfile.content_type == 'image/svg+xml':
+                if hasattr(imgfile, 'content_type') and imgfile.content_type == 'image/svg+xml':
                     try:
                         self._width, self._height, self._bounds = get_metadata_for_svg(self.file)
                     except Exception:
