@@ -3,8 +3,6 @@ import textwrap
 from filer.models.clipboardmodels import Clipboard, ClipboardItem
 from filer.models.foldermodels import Folder
 from filer.utils.compatibility import PILImage, PILImageDraw
-from svglib.svglib import svg2rlg
-from reportlab.graphics import renderSVG
 
 
 def create_superuser():
@@ -52,8 +50,8 @@ def create_image(mode='RGB', size=(800, 600)):
 
 def create_image_svg(mode='RGB', size=(800, 600)):
     svg_xml = '''<svg viewBox="0 0 {0} {1}" xmlns="http://www.w3.org/2000/svg"><rect x="-25" y="-25" width="{0}px" height="{0}px"\
-     stroke="black" fill="transparent" stroke-width="5" transform="translate(150,150)"></rect></svg>'''.format(size[0],size[1])
-    image = io.StringIO( textwrap.dedent(svg_xml))
+     stroke="black" fill="transparent" stroke-width="5" transform="translate(150,150)"></rect></svg>'''.format(size[0], size[1])
+    image = io.StringIO(textwrap.dedent(svg_xml))
     return image
 
 
