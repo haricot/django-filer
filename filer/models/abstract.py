@@ -7,6 +7,7 @@ from .. import settings as filer_settings
 from ..utils.compatibility import PILImage
 from ..utils.filer_easy_thumbnails import FilerThumbnailer
 from ..utils.pil_exif import get_exif_for_file
+from ..utils.svg_metadata import get_metadata_for_svg
 from .filemodels import File
 
 
@@ -50,34 +51,31 @@ class BaseImage(File):
     def file_data_changed(self, post_init=False):
         attrs_updated = super().file_data_changed(post_init=post_init)
         if attrs_updated:
-            imgfile = None
             try:
-                imgfile = self.file.file
-            except ValueError:
-                imgfile = self.file_ptr.file
-            if imgfile and not imgfile.mine_type == "image/svg+xml":
                 try:
-                    imgfile.seek(0)
-                    self._width, self._height = PILImage.open(imgfile).size
-                    self._bounds = False
-                except Exception:
-                    if post_init is False:
-                        # in case `imgfile` could not be found, unset dimensions
-                        # but only if not initialized by loading a fixture file
-                        self._width, self._height, self._bounds = None, None, None
-            else:
-                try:
-                    imgfile.seek(0)
-
-                    from svglib.svglib import svg2rlg
-                    drawing = svg2rlg(imgfile.file)
-                    self._width, self._height = drawing.width, drawing.height
-                    self._bounds = [left, bottom, right, top] =  drawing.getBounds()
-                except Exception:
-                    if post_init is False:
-                        # in case `imgfile` could not be found, unset dimensions
-                        # but only if not initialized by loading a fixture file
-                        self._width, self._height, self._bounds = None, None, None
+                    imgfile = self.file.file
+                except ValueError:
+                    imgfile = self.file_ptr.file
+                imgfile.seek(0)
+            except:
+                imgfile = None
+            if imgfile:
+                if  imgfile.content_type == 'image/svg+xml':
+                    is_except= False
+                    try:
+                         self._width, self._height  self._bounds = get_metadata_for_svg(self.file)
+                    except Exception:
+                         is_except = True
+                else:
+                    try:
+                        self._width, self._height = PILImage.open(imgfile).size
+                        self._bounds = False
+                    except Exception:
+                         is_except = True
+                if is_except and post_init is False:
+                    # in case `imgfile` could not be found, unset dimensions
+                    # but only if not initialized by loading a fixture file
+                    self._width, self._height= None, None
         return attrs_updated
 
     def save(self, *args, **kwargs):
@@ -105,6 +103,22 @@ class BaseImage(File):
                 self._exif_cache = {}
         return self._exif_cache
     exif = property(_get_exif)
+
+    def _get_bounds(self):
+        print(self.file.__dict__)
+        
+        if hasattr(self, '_bounds_cache'):
+            return self._bounds_cache
+        else:
+            if self.file:
+                if (self.file ,'file'):
+                    self._width, self._bounds_cache = get_metadata_for_svg(self.file)
+                else:
+                    self._bounds_cache = None
+            else:
+                self._bounds_cache = {}
+        return self._bounds_cache or []
+    bounds =  property(_get_bounds)
 
     def has_edit_permission(self, request):
         return self.has_generic_permission(request, 'edit')
