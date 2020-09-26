@@ -109,7 +109,7 @@ class BaseImage(File):
             return self._bounds_cache
         else:
             if self.file:
-                if hasattr(self.file,'file'):
+                if hasattr(self.file, 'file'):
                     self._width, self._height, self._bounds_cache = get_metadata_for_svg(self.file)
                 else:
                     self._bounds_cache = None
