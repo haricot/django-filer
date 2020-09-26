@@ -10,6 +10,7 @@ REQUIREMENTS = [
     'django-polymorphic>=2,<3.1',
     'easy-thumbnails>=2,<3.0',
     'Unidecode>=0.04,<1.2',
+    'svglib',
 ]
 
 
