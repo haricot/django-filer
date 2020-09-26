@@ -51,9 +51,9 @@ def create_image(mode='RGB', size=(800, 600)):
 
 
 def create_image_svg(mode='RGB', size=(800, 600)):
-    svg_xml=f'''<svg viewBox="0 0 {size[0]} {size[1]}" xmlns="http://www.w3.org/2000/svg"><rect x="-25" y="-25" width="{size[0]}" height="{size[0]}"\
-     stroke="black" fill="transparent" stroke-width="5" transform="translate(150,150)"></rect></svg>'''
-    image = io.StringIO(textwrap.dedent(svg_xml))
+    svg_xml = '''<svg viewBox="0 0 {0} {1}" xmlns="http://www.w3.org/2000/svg"><rect x="-25" y="-25" width="{0}px" height="{0}px"\
+     stroke="black" fill="transparent" stroke-width="5" transform="translate(150,150)"></rect></svg>'''.format(size[0],size[1])
+    image = io.StringIO( textwrap.dedent(svg_xml))
     return image
 
 
