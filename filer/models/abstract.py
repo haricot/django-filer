@@ -63,9 +63,9 @@ class BaseImage(File):
                 if  imgfile.content_type == 'image/svg+xml':
                     is_except= False
                     try:
-                         self._width, self._height  self._bounds = get_metadata_for_svg(self.file)
+                        self._width, self._height  self._bounds = get_metadata_for_svg(self.file)
                     except Exception:
-                         is_except = True
+                        is_except = True
                 else:
                     try:
                         self._width, self._height = PILImage.open(imgfile).size
