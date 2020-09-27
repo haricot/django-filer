@@ -38,7 +38,6 @@ class Form(forms.BaseForm):
         )
         settings['THUMBNAIL_SOURCE_GENERATORS'] = (
             'easy_thumbnails.source_generators.pil_image',
-            'easy_thumbnails.source_generators.svg_image',
         )
         settings['THUMBNAIL_CACHE_DIMENSIONS'] = True
 
