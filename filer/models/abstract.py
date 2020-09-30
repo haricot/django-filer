@@ -161,6 +161,10 @@ class BaseImage(File):
 
     def _generate_thumbnails(self, required_thumbnails):
         _thumbnails = {}
+        if self.file.instance.mime_type == "image/svg+xml":
+            required_thumbnails = {
+                list(required_thumbnails)[-1]:required_thumbnails.get(list(required_thumbnails)[-1])
+            }
         for name, opts in required_thumbnails.items():
             try:
                 opts.update({'subject_location': self.subject_location})
