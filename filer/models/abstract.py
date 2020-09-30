@@ -188,7 +188,6 @@ class BaseImage(File):
                     fallback_svg_thumbnails.update({size_key: same_source_clipped_thumbs})
             _thumbnails = fallback_svg_thumbnails
         return _thumbnails
-        return _thumbnails
 
     @property
     def icons(self):
