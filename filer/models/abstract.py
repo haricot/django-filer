@@ -162,9 +162,10 @@ class BaseImage(File):
     def _generate_thumbnails(self, required_thumbnails):
         _thumbnails = {}
         if self.file.instance.mime_type == "image/svg+xml":
-            required_thumbnails = {
-                list(required_thumbnails)[-1]:required_thumbnails.get(list(required_thumbnails)[-1])
-            }
+            original_required_thumbnails = required_thumbnails
+            key_last_thumbnails = list(required_thumbnails)[-1]
+            item_last_thumbnails = required_thumbnails.get(list(required_thumbnails)[-1]
+            required_thumbnails = {key_last_thumbnails: item_last_thumbnails}
         for name, opts in required_thumbnails.items():
             try:
                 opts.update({'subject_location': self.subject_location})
@@ -178,6 +179,14 @@ class BaseImage(File):
                     logger.error('Error while generating thumbnail: %s', e)
                 if filer_settings.FILER_DEBUG:
                     raise
+        if original_required_thumbnails:
+            fallback_svg_thumbnails = {}
+            same_source_clipped_thumbs = _thumbnails[key_last_thumbnails]
+            for size_key in original_required_thumbnails.keys():
+                if  size_key != key_last_thumbnails:
+                    fallback_svg_thumbnails.update({size_key: same_source_clipped_thumbs})
+            _thumbnails = fallback_svg_thumbnails
+        return _thumbnails
         return _thumbnails
 
     @property
