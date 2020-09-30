@@ -8,6 +8,7 @@ from ..utils.compatibility import PILImage
 from ..utils.filer_easy_thumbnails import FilerThumbnailer
 from ..utils.pil_exif import get_exif_for_file
 from ..utils.svg_metadata import get_metadata_for_svg
+
 from .filemodels import File
 
 
